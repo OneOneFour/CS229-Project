@@ -80,8 +80,8 @@ if __name__ == '__main__':
 
     for e in range(args.epochs):
         print(f"---Epoch {e} ---")
-        train_loss = train(model,train_dataset,optimizer,rmse,batch_size=16,args.cuda)
-        val_loss = val(model,validation_dataset,rmse,args.cuda)
+        train_loss = train(model,train_dataset,optimizer,rmse,batch_size=16,is_cuda=args.cuda)
+        val_loss = val(model,validation_dataset,rmse,is_cuda=args.cuda)
         print(f"Training Loss: {train_loss:.3f}")
         print(f"Validation Loss:{val_loss:.3f}")
 
