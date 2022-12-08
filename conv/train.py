@@ -12,10 +12,13 @@ from model import TCPredict
 def rmse(prediction,truth):
     return torch.sqrt(torch.mean((prediction - truth)**2))
  
-def train(model,loader,optimizer,loss_fn,batch_size):
+def train(model,loader,optimizer,loss_fn,batch_size,is_cuda):
     model.train()
     running_loss = 0.0
     for batch_idx,(X,y) in enumerate(loader):
+        if is_cuda:
+            X = X.cuda()
+            y = y.cuda()
         optimizer.zero_grad()
         out = model(X)
         loss = loss_fn(out,y)
@@ -24,10 +27,13 @@ def train(model,loader,optimizer,loss_fn,batch_size):
         running_loss += loss.item()
     return running_loss/(len(loader)*batch_size)
 
-def val(model,loader,loss_fn):
+def val(model,loader,loss_fn,is_cuda):
     model.eval()
     running_loss = 0.0
     for _,(X,y) in enumerate(loader):
+        if is_cuda:
+            X = X.cuda()
+            y = y.cuda()
         out = model(X)
         loss = loss_fn(out,y)
         running_loss += loss.item()
@@ -43,6 +49,7 @@ if __name__ == '__main__':
     parser.add_argument("--timepoints",type=int,default=8)
     parser.add_argument("--epochs",type=int,default=50)
     parser.add_argument("--fc-width",type=int,default=50)
+    parser.add_argument("--cuda",action='store_true')
     args = parser.parse_args()
 
     ibtracs_ds = util.get_dataset()
@@ -57,7 +64,10 @@ if __name__ == '__main__':
     ### Data cleansing
 
     model = TCPredict(initial_timesteps=args.timepoints,fc_width=args.fc_width)
-    model = model.cuda().double()
+    if args.cuda:
+        model = model.cuda().double()
+    else:
+        model = model.double()
 
 
     train_dataset= TensorDataset(torch.from_numpy(X_train),torch.from_numpy(y_train))
@@ -70,8 +80,8 @@ if __name__ == '__main__':
 
     for e in range(args.epochs):
         print(f"---Epoch {e} ---")
-        train_loss = train(model,train_dataset,optimizer,rmse,batch_size=16)
-        val_loss = val(model,validation_dataset,rmse)
+        train_loss = train(model,train_dataset,optimizer,rmse,batch_size=16,args.cuda)
+        val_loss = val(model,validation_dataset,rmse,args.cuda)
         print(f"Training Loss: {train_loss:.3f}")
         print(f"Validation Loss:{val_loss:.3f}")
 
