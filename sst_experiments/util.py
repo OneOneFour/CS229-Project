@@ -2,7 +2,7 @@ import xarray
 import numpy as np
 
 def get_dataset():
-    ds =  xarray.load_dataset("IBTrACS.since1980.v04r00.nc",)
+    ds =  xarray.load_dataset("../data/IBTrACS.since1980.v04r00.nc",)
     return ds.assign_coords(storm=ds.sid)
 
 def train_validation_test(ds:xarray.Dataset,seed:float=None,test_fraction:float=0.1,validation_fraction:float=0.2):
