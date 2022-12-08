@@ -1,13 +1,13 @@
 from torch.optim import Adam
 import argparse
-import torch.nn as nn 
-import util
 import numpy as np
 import os 
 import torch
 from torch.utils.data import DataLoader,TensorDataset
 from model import TCPredict
 
+
+DATADIR = os.environ.get("DATADIR","../data")
 
 def rmse(prediction,truth):
     return torch.sqrt(torch.mean((prediction - truth)**2))
@@ -46,21 +46,17 @@ if __name__ == '__main__':
 )
     parser.add_argument("output_dir",type=str)
     parser.add_argument("experiment_name",type=str)
-    parser.add_argument("--timepoints",type=int,default=8)
+    parser.add_argument("--timepoints",type=int,default=5)
     parser.add_argument("--epochs",type=int,default=50)
     parser.add_argument("--fc-width",type=int,default=50)
     parser.add_argument("--cuda",action='store_true')
     args = parser.parse_args()
 
-    ibtracs_ds = util.get_dataset()
-    sst_ds = util.get_sst_ds()
-    train_storms,valid_storms,test_storms = util.train_validation_test(ibtracs_ds,seed=42)
+    X_train = np.load(os.path.join(DATADIR,f"X_train_{args.timepoints}.npy"))
+    y_train = np.load(os.path.join(DATADIR,f"y_train_{args.timepoints}.npy"))
+    X_validation =np.load(os.path.join(DATADIR,f"X_validation_{args.timepoints}.npy"))
+    y_validation = np.load(os.path.join(DATADIR,f"y_validation_{args.timepoints}.npy"))
 
-    X_train,y_train,group_train = util.make_X_y(ibtracs_ds,sst_ds,train_storms,timesteps=args.timepoints)
-    X_validation,y_validation,group_val = util.make_X_y(ibtracs_ds,sst_ds,valid_storms,timesteps=args.timepoints)
-
-    X_train = np.transpose(X_train,axes=(0,2,1))
-    X_validation = np.transpose(X_validation,axes=(0,2,1))
     ### Data cleansing
 
     model = TCPredict(initial_timesteps=args.timepoints,fc_width=args.fc_width)

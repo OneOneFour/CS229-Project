@@ -1,7 +1,7 @@
 import xarray 
 import numpy as np
 import os
-DATADIR = os.environ.get("DATADIR",'..')
+DATADIR = os.environ.get("DATADIR",'../data')
 
 def get_dataset():
     ds =  xarray.load_dataset(os.path.join(DATADIR,'IBTrACS.since1980.v04r00.nc'))
