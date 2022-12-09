@@ -4,7 +4,7 @@ import numpy as np
 import os 
 import torch
 from torch.utils.data import DataLoader,TensorDataset
-from model import TCPredict
+from model import TCPredict,TCPredict2
 
 
 DATADIR = os.environ.get("DATADIR","../data")
@@ -62,15 +62,11 @@ if __name__ == '__main__':
     maxs = np.max(X_train,axis=(0,2))
 
     X_train = (X_train - mins[None,:,None])/(maxs[None,:,None] - mins[None,:,None])
-    y_train = (y_train - mins[None,:4])/(maxs[None,:4] - mins[None,:4])
-    X_validation = (X_validation - mins[None,:,None])/(maxs[None,:,None] - mins[None,:,None])
-    y_validation=( y_validation - mins[None,:4])/(maxs[None,:4] - mins[None,:4])
+    X_validation = (X_validation - mins[None,:,None])/(maxs[None,:,None] - mins[None,:,None])[None,:4])
     
     X_train = 2*X_train - 1
-    y_train = 2*y_train - 1
     X_validation = 2*X_validation - 1
-    y_validation = 2*y_validation - 1 
-    model = TCPredict(initial_timesteps=args.timepoints,fc_width=args.fc_width)
+    model = TCPredict2(initial_timesteps=args.timepoints,fc_width=args.fc_width)
     if args.cuda:
         model = model.cuda().double()
     else:
