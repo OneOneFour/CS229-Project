@@ -66,7 +66,7 @@ if __name__ == '__main__':
     
     X_train = 2*X_train - 1
     X_validation = 2*X_validation - 1
-    model = TCPredict2(initial_timesteps=args.timepoints,fc_width=args.fc_width)
+    model = TCPredict(initial_timesteps=args.timepoints,fc_width=args.fc_width)
     if args.cuda:
         model = model.cuda().double()
     else:
