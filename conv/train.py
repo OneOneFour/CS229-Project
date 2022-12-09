@@ -62,7 +62,7 @@ if __name__ == '__main__':
     maxs = np.max(X_train,axis=(0,2))
 
     X_train = (X_train - mins[None,:,None])/(maxs[None,:,None] - mins[None,:,None])
-    X_validation = (X_validation - mins[None,:,None])/(maxs[None,:,None] - mins[None,:,None])[None,:4])
+    X_validation = (X_validation - mins[None,:,None])/(maxs[None,:,None] - mins[None,:,None])
     
     X_train = 2*X_train - 1
     X_validation = 2*X_validation - 1
