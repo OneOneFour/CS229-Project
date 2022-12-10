@@ -20,6 +20,7 @@ def train(model,loader,optimizer,loss_fn,batch_size,is_cuda):
             X = X.cuda()
             y = y.cuda()
         optimizer.zero_grad()
+        print(X.shape)
         out = model(X)
         loss = loss_fn(out,y)
         loss.backward()
@@ -83,8 +84,8 @@ if __name__ == '__main__':
 
     for e in range(args.epochs):
         print(f"---Epoch {e} ---")
-        train_loss = train(model,train_dataset,optimizer,rmse,batch_size=16,is_cuda=args.cuda)
-        val_loss = val(model,validation_dataset,rmse,is_cuda=args.cuda)
+        train_loss = train(model,train_loader,optimizer,rmse,batch_size=16,is_cuda=args.cuda)
+        val_loss = val(model,validation_loader,rmse,is_cuda=args.cuda)
         print(f"Training Loss: {train_loss:.3f}")
         print(f"Validation Loss:{val_loss:.3f}")
 
