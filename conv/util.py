@@ -70,3 +70,40 @@ def make_X_y(ds,sst_ds,selected_storms,timesteps=5):
             yout.append(X[i+timesteps+1][:-4])
             storms.append(storm)
     return np.stack(Xout),np.stack(yout),np.array(storms)
+
+def get_storm_seeds(ds,sst_ds,selected_storms,timestep:int=5):
+    """
+    Similar but generates X, vector of storm seed and y, vector of entire storm prediction track
+    """
+    Xout,yout,start_times=[],[],[]
+
+    for storm in selected_storms:
+        usa_pres = ds.usa_pres.loc[storm]
+        usa_wind = ds.usa_wind.loc[storm]
+        ## All enteries have 360 points.
+        valid_coords = ~(np.isnan(usa_wind) | np.isnan(usa_pres))
+        lat = ds.lat.loc[storm][valid_coords]
+        lon = ds.lon.loc[storm][valid_coords]
+        storm_speed = ds.storm_speed.loc[storm][valid_coords]
+        storm_dir = ds.storm_dir.loc[storm][valid_coords]
+        u = storm_speed*np.sin(np.deg2rad(storm_dir))
+        v = storm_speed*np.cos(np.deg2rad(storm_dir))
+        usa_pres = usa_pres[valid_coords]
+        usa_wind = usa_wind[valid_coords]
+        time = ds.time.loc[storm][valid_coords]
+        cor_param = coriolis(lat)
+        try:
+            sst = sst_ds.sst.interp(time=time,lat=lat,lon=lon)
+        except ValueError:
+            continue
+        if np.isnan(sst).any():
+            continue
+        if timestep+1>=len(usa_wind):
+            continue
+
+        X = np.transpose(np.array([usa_wind,usa_pres,u,v,cor_param,sst,lat,lon]))
+    
+        Xout.append(X[:timestep])
+        yout.append(X)
+        start_times.append(time[timestep].values)
+    return Xout,yout,np.array(start_times)
