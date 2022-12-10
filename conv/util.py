@@ -16,7 +16,7 @@ def train_validation_test(ds:xarray.Dataset,seed:float=None,test_fraction:float=
     train_idx = int(len(main_track_shuffle) * train_fraction)
     test_idx = train_idx + int(len(main_track_shuffle) * validation_fraction)
 
-    return main_track_shuffle[:train_idx],main_track_shuffle[train_idx:test_idx],main_track_shuffle[:test_idx]
+    return main_track_shuffle[:train_idx],main_track_shuffle[train_idx:test_idx],main_track_shuffle[test_idx:]
 
 
 def get_x(ds:xarray.Dataset,idx:np.ndarray):
