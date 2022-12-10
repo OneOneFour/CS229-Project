@@ -20,7 +20,6 @@ def train(model,loader,optimizer,loss_fn,batch_size,is_cuda):
             X = X.cuda()
             y = y.cuda()
         optimizer.zero_grad()
-        print(X.shape)
         out = model(X)
         loss = loss_fn(out,y)
         loss.backward()
