@@ -34,7 +34,7 @@ def get_sst_ds():
     return sst_ds
 
 def coriolis(lat):
-    return np.sin(np.deg2rad(lat))
+    return 2*np.sin(np.deg2rad(lat))
 
 def make_X_y(ds,sst_ds,selected_storms,timesteps=5):
     Xout = []
